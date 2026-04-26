@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Plus, 
   Search, 
@@ -21,10 +21,11 @@ interface QuotationManagerProps {
 }
 
 export default function QuotationManager({ storage }: QuotationManagerProps) {
-  const { quotations, setQuotations, options } = storage;
+  const { quotations, setQuotations } = storage;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingQuote, setEditingQuote] = useState<Quotation | null>(null);
+  const [isNewDevice, setIsNewDevice] = useState(false);
 
   const [formData, setFormData] = useState<Omit<Quotation, 'id'>>({
     equipmentName: '',
@@ -249,20 +250,83 @@ export default function QuotationManager({ storage }: QuotationManagerProps) {
             </div>
 
             <form onSubmit={handleSave} className="p-8 space-y-6">
+              <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
+                <button 
+                  type="button"
+                  onClick={() => setIsNewDevice(false)}
+                  className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", !isNewDevice ? "bg-white shadow-sm text-emerald-600" : "text-slate-500")}
+                >
+                  Installed Device
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setIsNewDevice(true)}
+                  className={cn("flex-1 py-2 text-xs font-bold rounded-lg transition-all", isNewDevice ? "bg-white shadow-sm text-emerald-600" : "text-slate-500")}
+                >
+                  New Device Proposal
+                </button>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Equipment Name</label>
-                  <select 
+                {isNewDevice ? (
+                  <>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-sm font-bold text-slate-700">New Equipment Name</label>
+                      <input 
+                        type="text"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                        required
+                        placeholder="Enter equipment name"
+                        value={formData.equipmentName}
+                        onChange={(e) => setFormData({...formData, equipmentName: e.target.value})}
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-sm font-bold text-slate-700">Model Number</label>
+                      <input 
+                        type="text"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                        required
+                        placeholder="Enter model number"
+                        value={formData.modelNumber}
+                        onChange={(e) => setFormData({...formData, modelNumber: e.target.value})}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="col-span-2 space-y-2">
+                    <label className="text-sm font-bold text-slate-700">Installed Equipment</label>
+                    <select 
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                      required
+                      value={formData.equipmentName}
+                      onChange={(e) => {
+                        const device = storage.devices.find((d: any) => d.name === e.target.value);
+                        setFormData({
+                          ...formData, 
+                          equipmentName: e.target.value,
+                          modelNumber: device?.modelNumber || ''
+                        });
+                      }}
+                    >
+                      <option value="">Select Equipment</option>
+                      {storage.devices.map((d: any) => (
+                        <option key={d.id} value={d.name}>{d.name} ({d.modelNumber})</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700">Company Name</label>
+                  <input 
+                    type="text"
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
                     required
-                    value={formData.equipmentName}
-                    onChange={(e) => setFormData({...formData, equipmentName: e.target.value})}
-                  >
-                    <option value="">Select Equipment</option>
-                    {storage.devices.map((d: any) => (
-                      <option key={d.id} value={d.name}>{d.name} ({d.modelNumber})</option>
-                    ))}
-                  </select>
+                    placeholder="Enter vendor company"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700">Price (SAR)</label>
@@ -273,18 +337,6 @@ export default function QuotationManager({ storage }: QuotationManagerProps) {
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                   />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Company</label>
-                  <select 
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
-                    required
-                    value={formData.companyName}
-                    onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                  >
-                    <option value="">Select Company</option>
-                    {options.companies.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700">Date</label>
@@ -298,19 +350,16 @@ export default function QuotationManager({ storage }: QuotationManagerProps) {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-slate-700">Engineer Name</label>
-                  <select 
+                  <input 
+                    type="text"
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
                     required
+                    placeholder="Enter engineer name"
                     value={formData.engineerName}
                     onChange={(e) => setFormData({...formData, engineerName: e.target.value})}
-                  >
-                    <option value="">Select Engineer</option>
-                    {options.engineers.map(eng => (
-                      <option key={eng} value={eng}>{eng}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
-                <div className="space-y-2">
+                <div className="col-span-2 space-y-2">
                   <label className="text-sm font-bold text-slate-700">Engineer Mobile</label>
                   <input 
                     type="text"

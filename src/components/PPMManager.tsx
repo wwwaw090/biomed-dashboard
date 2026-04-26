@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Plus, 
   Trash2, 
@@ -17,7 +17,7 @@ const MONTHS = [
 ];
 
 export default function PPMManager({ storage }: { storage: any }) {
-  const { ppmTasks, setPpmTasks, options } = storage;
+  const { ppmTasks, setPpmTasks } = storage;
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState<Omit<PPMSchedule, 'id'>>({

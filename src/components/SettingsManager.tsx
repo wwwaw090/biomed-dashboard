@@ -1,10 +1,6 @@
 
-import { useState } from 'react';
+import React from 'react';
 import { 
-  Plus, 
-  Trash2, 
-  Building, 
-  User, 
   Download, 
   Upload, 
   Cloud, 
@@ -20,42 +16,6 @@ interface SettingsManagerProps {
 
 export default function SettingsManager({ storage }: SettingsManagerProps) {
   const { options, setOptions, devices, setDevices, maintenance, quotations, ppmTasks } = storage;
-  const [activeTab, setActiveTab] = useState<keyof typeof options>('companies');
-  const [newItem, setNewItem] = useState('');
-
-  const tabs = [
-    { id: 'companies', label: 'Companies', icon: Building },
-    { id: 'engineers', label: 'Engineers', icon: User },
-  ] as const;
-
-  const addItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newItem.trim()) return;
-    if (options[activeTab].includes(newItem)) return;
-    
-    setOptions({
-      ...options,
-      [activeTab]: [...options[activeTab], newItem.trim()]
-    });
-    setNewItem('');
-  };
-
-  const removeItem = (item: string) => {
-    setOptions({
-      ...options,
-      [activeTab]: options[activeTab].filter(i => i !== item)
-    });
-  };
-
-  const exportData = () => {
-    const data = { devices, maintenance, quotations, ppmTasks, options };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `biomed-data-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-  };
 
   return (
     <div className="space-y-6">
@@ -166,78 +126,6 @@ export default function SettingsManager({ storage }: SettingsManagerProps) {
               }}
             />
           </label>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar Tabs */}
-        <div className="lg:col-span-1 space-y-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
-                activeTab === tab.id 
-                  ? "bg-slate-900 text-white shadow-lg" 
-                  : "text-slate-500 hover:bg-slate-100"
-              )}
-            >
-              <tab.icon className="w-5 h-5" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Content Area */}
-        <div className="lg:col-span-3 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-            <h3 className="font-bold text-slate-900 flex items-center gap-2">
-              {tabs.find(t => t.id === activeTab)?.label}
-              <span className="bg-slate-200 text-slate-600 text-[10px] px-2 py-0.5 rounded-full uppercase">
-                {options[activeTab].length} Items
-              </span>
-            </h3>
-          </div>
-
-          <div className="p-6 border-b border-slate-100">
-            <form onSubmit={addItem} className="flex gap-2">
-              <input 
-                type="text" 
-                placeholder={`Add new ${activeTab.slice(0, -1)}...`}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-              />
-              <button 
-                type="submit"
-                className="bg-slate-900 text-white p-2.5 rounded-xl hover:bg-slate-800 transition-all"
-              >
-                <Plus className="w-6 h-6" />
-              </button>
-            </form>
-          </div>
-
-          <div className="p-6 flex-1 max-h-[500px] overflow-y-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {options[activeTab].map((item) => (
-                <div key={item} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 group">
-                  <span className="font-medium text-slate-700">{item}</span>
-                  <button 
-                    onClick={() => removeItem(item)}
-                    className="p-1 text-slate-300 hover:text-rose-500 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              {options[activeTab].length === 0 && (
-                <div className="col-span-full py-12 text-center">
-                  <p className="text-slate-400">No items found</p>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </div>

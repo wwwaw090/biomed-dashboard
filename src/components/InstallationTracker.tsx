@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Plus, 
   Search, 
@@ -20,7 +20,7 @@ interface InstallationTrackerProps {
 }
 
 export default function InstallationTracker({ storage }: InstallationTrackerProps) {
-  const { devices, setDevices, options } = storage;
+  const { devices, setDevices } = storage;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBranch, setFilterBranch] = useState<Branch | 'All'>('All');

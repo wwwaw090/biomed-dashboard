@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Plus, 
   Search, 
@@ -12,7 +12,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { useStorage } from '../hooks/useStorage';
-import { MaintenanceRecord, Branch } from '../types';
+import { MaintenanceRecord } from '../types';
 import { cn } from '../utils/cn';
 import { format } from 'date-fns';
 
@@ -21,7 +21,7 @@ interface MaintenanceTrackerProps {
 }
 
 export default function MaintenanceTracker({ storage }: MaintenanceTrackerProps) {
-  const { maintenance, setMaintenance, options } = storage;
+  const { maintenance, setMaintenance } = storage;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingRecord, setEditingRecord] = useState<MaintenanceRecord | null>(null);
@@ -274,17 +274,31 @@ export default function MaintenanceTracker({ storage }: MaintenanceTrackerProps)
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                   />
                 </div>
-                <div className="col-span-2 flex items-center gap-3 p-4 rounded-xl border border-slate-100 bg-slate-50">
-                  <input 
-                    type="checkbox"
-                    id="serviceReport"
-                    className="w-5 h-5 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
-                    checked={formData.serviceReport}
-                    onChange={(e) => setFormData({...formData, serviceReport: e.target.checked})}
-                  />
-                  <label htmlFor="serviceReport" className="text-sm font-medium text-slate-700 cursor-pointer">
-                    Service Report Received
-                  </label>
+                <div className="col-span-2 flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1 flex items-center gap-3 p-4 rounded-xl border border-slate-100 bg-slate-50">
+                    <input 
+                      type="checkbox"
+                      id="serviceReport"
+                      className="w-5 h-5 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                      checked={formData.serviceReport}
+                      onChange={(e) => setFormData({...formData, serviceReport: e.target.checked})}
+                    />
+                    <label htmlFor="serviceReport" className="text-sm font-medium text-slate-700 cursor-pointer">
+                      Service Report Received
+                    </label>
+                  </div>
+                  <div className="flex-1 flex items-center gap-3 p-4 rounded-xl border border-slate-100 bg-slate-50">
+                    <input 
+                      type="checkbox"
+                      id="statusComplete"
+                      className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      checked={formData.status === 'Completed'}
+                      onChange={(e) => setFormData({...formData, status: e.target.checked ? 'Completed' : 'In Progress'})}
+                    />
+                    <label htmlFor="statusComplete" className="text-sm font-medium text-slate-700 cursor-pointer">
+                      Mark as Completed
+                    </label>
+                  </div>
                 </div>
               </div>
 

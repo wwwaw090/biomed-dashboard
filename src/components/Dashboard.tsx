@@ -19,7 +19,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ storage, setActiveView }: DashboardProps) {
-  const { devices, maintenance, ppmTasks, quotations, notifications } = storage;
+  const { devices, maintenance, ppmTasks } = storage;
 
   const stats = [
     { 
@@ -60,12 +60,6 @@ export default function Dashboard({ storage, setActiveView }: DashboardProps) {
     },
   ];
 
-  const branchData = [
-    { name: 'Dammam', value: devices.filter(d => d.branch === 'Dammam').length },
-    { name: 'Al Khobar', value: devices.filter(d => d.branch === 'Al Khobar').length },
-  ];
-
-  const COLORS = ['#3b82f6', '#10b981'];
 
   return (
     <div className="space-y-8">
