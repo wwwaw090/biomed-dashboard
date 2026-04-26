@@ -160,20 +160,20 @@ export default function InstallationTracker({ storage }: InstallationTrackerProp
                 }`}>
                   {device.branch}
                 </span>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                   <button 
                     onClick={() => {
                       setEditingDevice(device);
                       setFormData(device);
                       setIsModalOpen(true);
                     }}
-                    className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600"
+                    className="p-1.5 bg-slate-100 lg:bg-transparent hover:bg-slate-200 rounded-lg text-slate-600"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => deleteDevice(device.id)}
-                    className="p-1.5 hover:bg-red-50 rounded-lg text-red-600"
+                    className="p-1.5 bg-rose-50 lg:bg-transparent hover:bg-rose-100 rounded-lg text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

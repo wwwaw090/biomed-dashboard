@@ -193,13 +193,13 @@ export default function QuotationManager({ storage }: QuotationManagerProps) {
                             setFormData(quote);
                             setIsModalOpen(true);
                           }}
-                          className="p-1.5 hover:bg-white rounded-lg text-slate-600 border border-transparent hover:border-slate-200 transition-all"
+                          className="p-1.5 bg-white rounded-lg text-slate-600 border border-slate-200 lg:border-transparent lg:hover:border-slate-200 transition-all"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => deleteQuote(quote.id)}
-                          className="p-1.5 hover:bg-rose-50 rounded-lg text-rose-600 border border-transparent hover:border-rose-100 transition-all"
+                          className="p-1.5 bg-rose-50 rounded-lg text-red-600 border border-rose-100 lg:border-transparent lg:hover:border-rose-100 transition-all"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

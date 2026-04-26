@@ -5,6 +5,7 @@ import { Device, Quotation, MaintenanceRecord, PPMSchedule, DropdownOptions, Not
 export function useStorage() {
   const [cloudToken, setCloudToken] = useState<string>(() => localStorage.getItem('bio_gh_token') || '');
   const [isSyncing, setIsSyncing] = useState(false);
+  const [skipNextSync, setSkipNextSync] = useState(false);
 
   const [devices, setDevices] = useState<Device[]>(() => {
     const saved = localStorage.getItem('bio_devices');
@@ -53,18 +54,23 @@ export function useStorage() {
   // Auto-sync effect: Triggers whenever data changes
   useEffect(() => {
     if (!cloudToken) return;
+    if (skipNextSync) {
+      setSkipNextSync(false);
+      return;
+    }
     
     const timeoutId = setTimeout(() => {
       triggerCloudSync();
-    }, 3000); // Wait 3 seconds after last change before auto-syncing
+    }, 3000);
 
     return () => clearTimeout(timeoutId);
-  }, [devices, quotations, maintenance, ppmTasks, options]);
+  }, [devices, quotations, maintenance, ppmTasks, options, skipNextSync]);
 
   const loadFromCloud = async (token: string) => {
     setIsSyncing(true);
     const data = await (await import('../utils/githubSync')).fetchFromGitHub(token);
     if (data) {
+      setSkipNextSync(true);
       if (data.devices) setDevices(data.devices);
       if (data.quotations) setQuotations(data.quotations);
       if (data.maintenance) setMaintenance(data.maintenance);
@@ -100,6 +106,9 @@ export function useStorage() {
 
   useEffect(() => {
     localStorage.setItem('bio_gh_token', cloudToken);
+    if (cloudToken) {
+      loadFromCloud(cloudToken);
+    }
   }, [cloudToken]);
 
   return {
